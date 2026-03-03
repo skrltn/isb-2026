@@ -1,0 +1,5 @@
+ALPHABET = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ '
+INPUT_FILE = 'original_task1.txt'
+ENCRYPTED_FILE = 'encrypted_task1.txt'
+KEY_FILE = 'key_task1.txt'
+CHECK_FILE = 'check_task1.txt'
