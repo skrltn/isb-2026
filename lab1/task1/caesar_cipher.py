@@ -1,17 +1,5 @@
 from files1 import ALPHABET, INPUT_FILE, ENCRYPTED_FILE, KEY_FILE, CHECK_FILE
 
-with open(INPUT_FILE, 'r', encoding='utf-8') as f:
-    text = f.read()
-
-print('Исходный текст прочитан из файла: ' + INPUT_FILE)
-print('Длина текста: ' + str(len(text)) + ' символов')
-print('Первые 100 символов:')
-print(text[:100] + '...')
-print()
-
-shift = 9
-print('Выбран сдвиг: ' + str(shift) + ' (вправо)')
-
 def encrypt(text: str, shift: int) -> str:
     """
     Шифрует текст методом Цезаря.
@@ -32,6 +20,7 @@ def encrypt(text: str, shift: int) -> str:
         else:
             encrypted += char
     return encrypted
+
 
 def decrypt(encrypted_text: str, shift: int) -> str:
     """
@@ -54,41 +43,102 @@ def decrypt(encrypted_text: str, shift: int) -> str:
             decrypted += char
     return decrypted
 
-encrypted = encrypt(text, shift)
 
-with open(ENCRYPTED_FILE, 'w', encoding='utf-8') as f:
-    f.write(encrypted)
+def read_text_from_file(file_path: str) -> str:
+    """
+    Читает текст из файла.
+    
+    Args:
+        file_path: Путь к файлу
+    
+    Returns:
+        Содержимое файла
+    """
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read()
 
-print('Зашифрованный текст сохранен в файл: ' + ENCRYPTED_FILE)
-print('Первые 100 символов зашифрованного текста:')
-print(encrypted[:100] + '...')
-print()
 
-with open(KEY_FILE, 'w', encoding='utf-8') as f:
-    f.write('Ключ шифрования (сдвиг ' + str(shift) + ')\n')
-    f.write('Алфавит: ' + ALPHABET + '\n\n')
-    f.write('Таблица замены:\n')
-    for i, letter in enumerate(ALPHABET):
-        new_letter = ALPHABET[(i + shift) % len(ALPHABET)]
-        f.write(letter + ' -> ' + new_letter + '\n')
+def write_text_to_file(file_path: str, text: str) -> None:
+    """
+    Записывает текст в файл.
+    
+    Args:
+        file_path: Путь к файлу
+        text: Текст для записи
+    """
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(text)
 
-print('Ключ шифрования сохранен в файл: ' + KEY_FILE)
-print()
 
-decrypted = decrypt(encrypted, shift)
+def save_key_file(shift: int) -> None:
+    """
+    Сохраняет ключ шифрования в файл.
+    
+    Args:
+        shift: Величина сдвига
+    """
+    with open(KEY_FILE, 'w', encoding='utf-8') as f:
+        f.write(f'Ключ шифрования (сдвиг {shift})\n')
+        f.write(f'Алфавит: {ALPHABET}\n\n')
+        f.write('Таблица замены:\n')
+        for i, letter in enumerate(ALPHABET):
+            new_letter = ALPHABET[(i + shift) % len(ALPHABET)]
+            f.write(f'{letter} -> {new_letter}\n')
 
-with open(CHECK_FILE, 'w', encoding='utf-8') as f:
-    f.write(decrypted)
 
-if text == decrypted:
-    print(' Дешифровка выполнена успешно. Текст восстановлен полностью.')
-else:
-    print('Ошибка дешифровки')
+def print_file_info(text: str, file_path: str, label: str) -> None:
+    """
+    Выводит информацию о файле.
+    
+    Args:
+        text: Текст из файла
+        file_path: Путь к файлу
+        label: Метка для вывода
+    """
+    print(f'{label} прочитан из файла: {file_path}')
+    print(f'Длина текста: {len(text)} символов')
+    print('Первые 100 символов:')
+    print(f'{text[:100]}...')
+    print()
 
-print('Проверочный файл сохранен: ' + CHECK_FILE)
-print()
-print('Все файлы созданы:')
-print('- ' + INPUT_FILE)
-print('- ' + ENCRYPTED_FILE)
-print('- ' + KEY_FILE)
-print('- ' + CHECK_FILE)
+
+def main() -> None:
+    """
+    Основная функция программы.
+    """
+    text = read_text_from_file(INPUT_FILE)
+    print_file_info(text, INPUT_FILE, 'Исходный текст')
+    
+    shift = 9
+    print(f'Выбран сдвиг: {shift} (вправо)')
+    
+    encrypted = encrypt(text, shift)
+    write_text_to_file(ENCRYPTED_FILE, encrypted)
+    print(f'Зашифрованный текст сохранен в файл: {ENCRYPTED_FILE}')
+    print(f'Первые 100 символов зашифрованного текста:')
+    print(f'{encrypted[:100]}...')
+    print()
+
+    save_key_file(shift)
+    print(f'Ключ шифрования сохранен в файл: {KEY_FILE}')
+    print()
+    
+    decrypted = decrypt(encrypted, shift)
+    write_text_to_file(CHECK_FILE, decrypted)
+    
+    if text == decrypted:
+        print('Дешифровка выполнена успешно. Текст восстановлен полностью.')
+    else:
+        print('Ошибка дешифровки')
+    
+    print(f'Проверочный файл сохранен: {CHECK_FILE}')
+    print()
+    print('Все файлы созданы:')
+    print(f'- {INPUT_FILE}')
+    print(f'- {ENCRYPTED_FILE}')
+    print(f'- {KEY_FILE}')
+    print(f'- {CHECK_FILE}')
+
+
+if __name__ == '__main__':
+    main()
